@@ -1,6 +1,7 @@
 'use strict';
 
 const { loggerDeposits } = require('../../config/logger');
+const { ROLES } = require('../../constants');
 const toolsLib = require('hollaex-tools-lib');
 const { errorMessageConverter } = require('../../utils/conversion');
 
@@ -29,6 +30,10 @@ const getAdminDeposits = (req, res) => {
 		address,
 		format
 	} = req.swagger.params;
+
+	if (format.value && req.auth.scopes.indexOf(ROLES.ADMIN) === -1 && !user_id.value) {
+		return res.status(403).json({ message: API_KEY_NOT_PERMITTED });
+	}
 
 	toolsLib.wallet.getUserDepositsByKitId(
 		user_id.value,
